@@ -13,53 +13,11 @@ library(scales)
 library(tools)
 library(here)
 
-# ----- Functions ----- 
-
-# Create function to read data on either PC or Mac
-read_data_file = function(relative_path,
-                           sheet = NULL,
-                           col_types = NULL) {
-  
-  # Detect OS
-  sys_name = Sys.info()[["sysname"]]
-  
-  # Set base OneDrive path depending on OS
-  base_path = if (sys_name == "Windows") {
-    "C:/Users/k1813853/OneDrive - King's College London"
-  } else if (sys_name == "Darwin") {  # Mac
-    "Library/CloudStorage/OneDrive-King'sCollegeLondon"
-  } else {
-    stop("Unsupported operating system")
-  }
-  
-  # Build full path
-  full_path = file.path(base_path, relative_path)
-  
-  # Check file exists (nice safety)
-  if (!file.exists(full_path)) {
-    stop(paste("File not found at:", full_path))
-  }
-  
-  # Detect extension
-  ext = tolower(file_ext(full_path))
-  
-  # Read file depending on type
-  if (ext == "csv") {
-    return(read.csv(full_path, col_types = col_types))
-    
-  } else if (ext %in% c("xls", "xlsx")) {
-    return(read_excel(full_path, sheet = sheet))
-    
-  } else {
-    stop("Unsupported file type. Use csv, xls, or xlsx.")
-  }
-}
-
 
 # ----- Demographic data -----
 
 # Read demographic information
-demos = read_data_file("LEAP/Recruitment/TwinDetails_18.08.2025.xlsx") 
+demos = read_xlsx("TwinDetails_18.08.2025.xlsx") 
 
 # Ensure consistent formatting
 demos = demos %>%
@@ -69,7 +27,7 @@ demos = demos %>%
 # ----- Non-responders data -----
 
 # Load data
-non_responders = read_data_file("LEAP/Recruitment/ContactedTwins_LEAP.xlsx")
+non_responders = read_xlsx("Data_2025/ContactedTwins_LEAP.xlsx")
 
 # Ensure consistent formatting
 non_responders = non_responders %>%
@@ -83,7 +41,7 @@ non_responders = non_responders %>%
 # ----- LEAP twins data -----
 
 # Load data
-leap_participants = read_data_file("LEAP/Recruitment/All LEAP parrticipants as of 24Sept25.xlsx")
+leap_participants = read_xlsx("Data_2025/All LEAP parrticipants as of 24Sept25.xlsx")
 
 # Ensure consistent formatting
 leap_participants = leap_participants %>%
@@ -97,7 +55,7 @@ singletons = leap_participants %>%
 # ----- LEAPclusion data -----
 
 # Load data
-leapclusion = read_data_file("LEAP/Recruitment/All LEAP parrticipants as of 24Sept25.xlsx",
+leapclusion = read_xlsx("Data_2025/All LEAP parrticipants as of 24Sept25.xlsx",
                          sheet = "LEAPclusion")
 
 # Ensure consistent formatting
@@ -108,7 +66,7 @@ leapclusion = leapclusion %>%
 # ----- LEAP not contacted data ----- 
 
 # load data
-leap_not_contacted = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx", 
+leap_not_contacted = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx", 
                                 sheet = "Not contacted")
 
 # Ensure consistent formatting
@@ -119,7 +77,7 @@ leap_not_contacted = leap_not_contacted %>%
 # ----- LEAP refused data ----- 
 
 # load data
-leap_inactive_all = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx", 
+leap_inactive_all = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx", 
                                sheet = "Unbooked_inactive")
 
 # Ensure consistent formatting
@@ -138,7 +96,7 @@ leap_refused = leap_inactive_all %>%
 # ----- LEAP eligibility data -----
 
 # Load LEAP eligibility data
-leap_eligibility_all = read_data_file("LEAP/Recruitment/EntireRegistryNov2025.xlsx")
+leap_eligibility_all = read_xlsx("Data_2025/EntireRegistryNov2025.xlsx")
 
 # Ensure consistent formatting
 leap_eligibility_all = leap_eligibility_all %>%
@@ -316,56 +274,56 @@ unaccounted_ids = unaccounted %>%
 lists = list(
   
   # Not contacted
-  Not_contacted = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Not_contacted = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                              sheet = "Not contacted") %>%
     rename(STUDY_ID = STUDY_NO),
   
   # Unbooked_Postal
-  Unbooked_Postal = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Unbooked_Postal = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                sheet = "Unbooked_Postal") %>%
     rename(STUDY_ID = STUDY_NO),
   
   # Booked
-  Booked = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx", 
+  Booked = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx", 
                       sheet = "Booked") %>%
     rename(STUDY_ID = STUDY_NO),
   
   # Booked_NoPBMCs
-  Booked_NoPBMCs = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx", 
+  Booked_NoPBMCs = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx", 
                               sheet = "Booked_NoPBMCs") %>%
     rename(STUDY_ID = STUDY_NO),
   
   # Returned_LEAPclusion
-  Returned_LEAPclusion = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Returned_LEAPclusion = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                     sheet = "Returned_Leapclusion") %>%
     rename(STUDY_ID = STUDY_NO),
   
   # Returned_LEAPclusion_contacted_yes
-  Returned_LEAPclusion_contacted_yes = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Returned_LEAPclusion_contacted_yes = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                   sheet = "Returned_Leapclusion") %>%
     filter(Contacted == 'yes') %>% 
     rename(STUDY_ID = STUDY_NO),
   
   # Returned_LEAPclusion_contacted_no
-  Returned_LEAPclusion_contacted_no = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Returned_LEAPclusion_contacted_no = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                  sheet = "Returned_Leapclusion") %>%
     filter(Contacted == 'no') %>% 
     rename(STUDY_ID = STUDY_NO),
   
   # Returned_LEAPclusion_booked_yes
-  Returned_LEAPclusion_booked_yes = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Returned_LEAPclusion_booked_yes = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                sheet = "Returned_Leapclusion") %>%
     filter(Booked == 'yes') %>% 
     rename(STUDY_ID = STUDY_NO),
   
   # Returned_LEAPclusion_booked_no
-  Returned_LEAPclusion_booked_no = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  Returned_LEAPclusion_booked_no = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                               sheet = "Returned_Leapclusion") %>%
     filter(Booked == 'no') %>% 
     rename(STUDY_ID = STUDY_NO),
   
   # NoEmail_Phoned
-  NoEmail_Phoned = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx", 
+  NoEmail_Phoned = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx", 
                               sheet = "NoEmail_Phoned") %>%
     rename(STUDY_ID = STUDY_NO)
   
@@ -385,18 +343,18 @@ sapply(lists, calculate_overlap)
 # ----- Read data -----
 
 # Read leapclusion
-Returned_LEAPclusion = read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+Returned_LEAPclusion = read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                   sheet = "Returned_Leapclusion")
 
 contacted = bind_rows(
   
-  read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
              sheet = "Contacted once") %>% select(STUDY_NO),
   
-  read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
              sheet = "Contacted twice") %>% select(STUDY_NO),
   
-  read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+  read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
              sheet = "Contacted 3+") %>% select(STUDY_NO)
 )
 
@@ -413,27 +371,27 @@ unaccounted_binary = unaccounted %>%
     
     
     # Not contacted
-    Not_contacted = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Not_contacted = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                     sheet = "Not contacted")$STUDY_NO, T, ""),
     
     # Unbooked_Postal
-    Unbooked_Postal = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_Postal = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                       sheet = "Unbooked_Postal")$STUDY_NO, T, ""),
     
     # Unbooked_inactive
-    Unbooked_inactive = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_inactive = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                         sheet = "Unbooked_inactive")$STUDY_NO, T, ""),
     
     # Booked
-    Unbooked_Postal = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_Postal = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                       sheet = "Booked")$STUDY_NO, T, ""),
     
     # Booked_NoPBMCs
-    Booked_NoPBMCs = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Booked_NoPBMCs = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                      sheet = "Booked_NoPBMCs")$STUDY_NO, T, ""),
     
     # Returned_Leapclusion
-    Returned_Leapclusion = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Returned_Leapclusion = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                            sheet = "Returned_Leapclusion")$STUDY_NO, T, ""),
     
     # Returned_LEAPclusion_contacted_yes
@@ -443,7 +401,7 @@ unaccounted_binary = unaccounted %>%
     Returned_LEAPclusion_booked_yes = ifelse(STUDY_ID %in% subset(Returned_LEAPclusion, Booked == 'yes')$STUDY_NO, T, ""),
     
     # NoEmail_Phoned
-    NoEmail_Phoned = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    NoEmail_Phoned = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                      sheet = "NoEmail_Phoned")$STUDY_NO, T, ""),
     
     # Leap Clinic Visits
@@ -464,11 +422,11 @@ unaccounted_logic_table = unaccounted_binary %>%
   select(n, everything())
 
 # Save logic table 
-write.csv(unaccounted_logic_table, "LEAP/Recruitment/LEAP_Recruitment_Unaccounted_Individuals_Logic_Table.csv",
+write.csv(unaccounted_logic_table, "Outputs/LEAP_Recruitment_Unaccounted_Individuals_Logic_Table.csv",
           row.names = F)
 
 # Save unaccounted cohort 
-write.csv(unaccounted, "LEAP/Recruitment/LEAP_Recruitment_Unaccounted_Individuals.csv",
+write.csv(unaccounted, "Outputs/LEAP_Recruitment_Unaccounted_Individuals.csv",
           row.names = F)
 
 
@@ -477,7 +435,7 @@ write.csv(unaccounted, "LEAP/Recruitment/LEAP_Recruitment_Unaccounted_Individual
 # ==================================
 
 # Read data
-twinclusion = read_data_file("LEAP/Recruitment/LEAP_Recruitment_Unaccounted_Individuals_Leapclusion.xlsx",
+twinclusion = read_xlsx("Data_2026/LEAP_Recruitment_Unaccounted_Individuals_Leapclusion.xlsx",
                              sheet = "Twinc.Invited")
 
 twinclusion_invite = twinclusion %>% 
@@ -498,14 +456,14 @@ twinclusion_blood_samples = twinclusion %>%
 # ----- Sept-Oct recruitment data -----
 
 # Read data
-leapseptoct = read_data_file("LEAP/Recruitment/Copy of Leap Unaccounted Sept Oct 2025 Visit.xlsx",
+leapseptoct = read_xlsx("Data_2026/Leap Unaccounted Sept Oct 2025 Visit.xlsx",
                              sheet = "LeapSeptOct")
 
 
 # ----- Oct- recruitment data -----
 
 # Read data
-leapcompleted = read_data_file("LEAP/Recruitment/Copy of Leap Unaccounted Sept Oct 2025 Visit.xlsx",
+leapcompleted = read_xlsx("Data_2026/Leap Unaccounted Sept Oct 2025 Visit.xlsx",
                              sheet = "LeapCompleted")
 
 # Ensure consistent formatting
@@ -516,7 +474,7 @@ leapcompleted = leapcompleted %>%
 # ----- Cancelled data -----
 
 # Read data
-leapcancelled = read_data_file("LEAP/Recruitment/Copy of Leap Unaccounted Sept Oct 2025 Visit.xlsx",
+leapcancelled = read_xlsx("Data_2026/Leap Unaccounted Sept Oct 2025 Visit.xlsx",
                                sheet = "LeapCancelled")
 
 # Ensure consistent formatting
@@ -527,7 +485,7 @@ leapcancelled = leapcancelled %>%
 # ----- Sept-Oct static recruitment data -----
 
 # Read data
-sepocstatic = read_data_file("LEAP/Recruitment/Copy of Leap Unaccounted Sept Oct 2025 Visit.xlsx",
+sepocstatic = read_xlsx("Data_2026/Leap Unaccounted Sept Oct 2025 Visit.xlsx",
                              sheet = "SepOcStatic")
 
 # Ensure consistent formatting
@@ -546,27 +504,27 @@ unaccounted_binary_new = unaccounted %>%
     
     
     # Not contacted
-    Not_contacted = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Not_contacted = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                         sheet = "Not contacted")$STUDY_NO, T, ""),
     
     # Unbooked_Postal
-    Unbooked_Postal = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_Postal = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                           sheet = "Unbooked_Postal")$STUDY_NO, T, ""),
     
     # Unbooked_inactive
-    Unbooked_inactive = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_inactive = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                             sheet = "Unbooked_inactive")$STUDY_NO, T, ""),
     
     # Booked
-    Unbooked_Postal = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Unbooked_Postal = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                           sheet = "Booked")$STUDY_NO, T, ""),
     
     # Booked_NoPBMCs
-    Booked_NoPBMCs = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Booked_NoPBMCs = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                          sheet = "Booked_NoPBMCs")$STUDY_NO, T, ""),
     
     # Returned_Leapclusion
-    Returned_Leapclusion = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    Returned_Leapclusion = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                                sheet = "Returned_Leapclusion")$STUDY_NO, T, ""),
     
     # Returned_LEAPclusion_contacted_yes
@@ -576,7 +534,7 @@ unaccounted_binary_new = unaccounted %>%
     Returned_LEAPclusion_booked_yes = ifelse(STUDY_ID %in% subset(Returned_LEAPclusion, Booked == 'yes')$STUDY_NO, T, ""),
     
     # NoEmail_Phoned
-    NoEmail_Phoned = ifelse(STUDY_ID %in% read_data_file("LEAP/Recruitment/LEAPBreakdown_September2025 1.xlsx",
+    NoEmail_Phoned = ifelse(STUDY_ID %in% read_xlsx("Data_2025/LEAPBreakdown_September2025 1.xlsx",
                                                          sheet = "NoEmail_Phoned")$STUDY_NO, T, ""),
     
     # Leap Clinic Visits
@@ -624,11 +582,11 @@ unaccounted_logic_table_new = unaccounted_binary_new %>%
   select(n, everything())
 
 # Save logic table 
-write.csv(unaccounted_logic_table_new, "LEAP/Recruitment//Outputs/LEAP_Recruitment_Unaccounted_Individuals_Logic_Table_Updated.csv",
+write.csv(unaccounted_logic_table_new, "Outputs/LEAP_Recruitment_Unaccounted_Individuals_Logic_Table_Updated.csv",
           row.names = F)
 
 # Save unaccounted cohort 
-write.csv(unaccounted, "LEAP/Recruitment/Outputs/LEAP_Recruitment_Unaccounted_Individuals_Updated.csv",
+write.csv(unaccounted, "Outputs/LEAP_Recruitment_Unaccounted_Individuals_Updated.csv",
           row.names = F)
 
 
@@ -637,5 +595,11 @@ write.csv(unaccounted, "LEAP/Recruitment/Outputs/LEAP_Recruitment_Unaccounted_In
 # ==================================
 # ----- LEAP Eligibility -----  
 
-leap_eligble_2026 = read_xlsx("Leap Status Lists.xlsx", sheet = "All LEAP")
+# Read updated eligibility data 
+leap_eligble_2026 = read_xlsx("Data_2026/Leap Status Lists.xlsx", sheet = "All LEAP")
 
+# Check for differences in LEAP Status counts
+left_join(
+  leap_eligibility %>% count(LEAP) %>% rename(n_2025 = n, LEAP_Status = LEAP),
+  leap_eligble_2026 %>% count(LEAP_Status) %>% rename(n_2026 = n),
+  by = "LEAP_Status")
