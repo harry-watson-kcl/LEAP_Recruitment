@@ -603,5 +603,3 @@ left_join(
   leap_eligibility %>% count(LEAP) %>% rename(n_2025 = n, LEAP_Status = LEAP),
   leap_eligble_2026 %>% count(LEAP_Status) %>% rename(n_2026 = n),
   by = "LEAP_Status")
-
-asda
