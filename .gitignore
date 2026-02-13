@@ -446,3 +446,10 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 >>>>>>> f78a596decd54d7e7da8569a9292a595eb325c3b
+
+#################################
+# OTHER FILES ADDED AD HOC      #
+#################################
+
+# Microsoft office 
+*.pptx
