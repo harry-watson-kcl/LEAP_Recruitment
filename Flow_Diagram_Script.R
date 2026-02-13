@@ -591,9 +591,9 @@ write.csv(unaccounted, "Outputs/LEAP_Recruitment_Unaccounted_Individuals_Updated
 
 
 # ==================================
-# Checking New Lists - 11/02/2026
+# Updated Analysis 
 # ==================================
-# ----- LEAP Eligibility -----  
+# ----- LEAP Eligibility Data -----  
 
 # Read updated eligibility data 
 leap_eligble_2026 = read_xlsx("Data_2026/Leap Status Lists.xlsx", sheet = "All LEAP")
@@ -604,4 +604,46 @@ left_join(
   leap_eligble_2026 %>% count(LEAP_Status) %>% rename(n_2026 = n),
   by = "LEAP_Status")
 
-# Check working
+# Re-read updated eligibility data 
+leap_eligble_2026 = read_xlsx("Data_2026/FULL Leap Status List.xlsx", sheet = "ALL LEAP") %>% 
+  rename(STUDY_ID = `STUDY NUMBER`)
+
+# Check for differences in LEAP Status counts
+left_join(
+  leap_eligibility %>% count(LEAP) %>% rename(n_2025 = n, LEAP_Status = LEAP),
+  leap_eligble_2026 %>% count(LEAP_Status) %>% rename(n_2026 = n),
+  by = "LEAP_Status")
+
+
+# ----- LEAP Booking Data -----  
+
+# Read updated contacting data 
+leap_booking_2026 = read_xlsx("Data_2026/Leap Status Lists.xlsx", sheet = "LEAP Bookings") %>% 
+  rename(STUDY_ID = STUDY_NO)
+
+# Create list of booking completed individuals
+leap_booking_completed_2026 = leap_booking_2026 %>% 
+  filter(VisitStatusID == "Completed")
+
+# Create list of booking cancelled individuals
+leap_booking_cancelled_2026 = leap_booking_2026 %>% 
+  filter(VisitStatusID == "Cancelled")
+
+
+# ----- LEAP Contacting Data -----  
+
+# Read updated contacting data 
+leap_contacting_2026 = read_xlsx("Data_2026/Leap Status Lists.xlsx", sheet = "LEAP Invites") %>% 
+  rename(STUDY_ID = `STUDY NUMBER`)
+
+# Create list of not contacted individuals
+leap_not_contacted_2026 = leap_contacting_2026 %>%  
+  filter(is.na(`Email sent`) | `Email sent` == 'No email') 
+
+# Create list of non-responding individuals
+leap_non_responders_2026 = leap_contacting_2026 %>%  
+  filter(!is.na(`Email sent`) & `Email sent` != 'No email') 
+
+
+
+
