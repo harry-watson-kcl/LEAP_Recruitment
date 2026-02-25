@@ -640,12 +640,8 @@ leap_not_contacted_2026 = leap_invites_2026 %>%
 
 # ----- 2026 LEAPclusion Data -----
 
-# Read updated LEAPclusion data - contacting/booking sheet
-leapclusion_2026 = read_xlsx("Data_2026/Leapclusion Final Recruitment 2025.xlsx", sheet = "UncontactedPostal") %>% 
-  rename(STUDY_ID = STUDY_NO) 
-
-# Read updated LEAPclusion data - expand list sheets
-leapclusion_all_2026 = read_xlsx("Data_2026/Leapclusion Final Recruitment 2025.xlsx", sheet = "TwinclusionALL") %>% 
+# Read updated LEAPclusion data 
+leapclusion_2026 = read_xlsx("Data_2026/Leapclusion Final Recruitment 2025.xlsx", sheet = "TwinclusionALL") %>% 
   rename(STUDY_ID = Study_No) 
 
 # Create list of non-responsive LEAPclusion individuals 
@@ -661,17 +657,10 @@ leapclusion_booked_2026 = leapclusion_2026 %>%
   filter(`Booked?` == "Yes")
 
 # Read lab LEAPclusion data 
-leapclusion_lab_2026 = read_xlsx("Data_2026/LEAP Twinclusion Samples_as of 09Dec25.xlsx") %>% 
-  rename(STUDY_ID = STUDY_NO) 
+leapclusion_lab_2026 = read_xlsx("Data_2026/LEAP Twinclusion Samples_as of 09Dec25.xlsx")
+
 
 # Create list of individuals in molly list and not lab list
-leapclusion_all_2026 %>% 
-  filter(!STUDY_ID %in% leapclusion_lab_2026$STUDY_ID) %>% 
-  View()
-
-# Create list of individuals in lab list and not molly list
-leapclusion_lab_2026 %>% 
-  filter(!STUDY_ID %in% leapclusion_all_2026$STUDY_ID)
 
 
 # ----- Attrition Exploration -----
